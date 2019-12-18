@@ -1,6 +1,7 @@
 const keys = require('./keys');
 var mqtt = require('mqtt');
 var con = require('./db');
+var sendSms = require('./send_sms');
 
 var options = keys.options;
 const client = mqtt.connect('mqtt://tailor.cloudmqtt.com', options);
@@ -20,6 +21,7 @@ client.on('message', (topic, message) => {
         console.log(message.toString());
         var data = message.toString().split(',');
         console.log(data);
+        sendSms(data);
     }
 })
 
