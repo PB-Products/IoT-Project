@@ -1,7 +1,7 @@
 const keys = require('./keys');
 var mqtt = require('mqtt');
 var con = require('./db');
-var sendSms = require('./send_sms');
+var sms = require('./send_sms');
 var writeData = require('./data_handler');
 
 var options = keys.options;
@@ -14,15 +14,39 @@ con.connect((err) => {
 
 client.on('connect', () => {
     console.log("Connected...");
-    client.subscribe('Data');
+    client.subscribe('data');
 });
 
 client.on('message', (topic, message) => {
-    if(topic === 'Data'){  
-        console.log(JSON.parse(message.toString()));
-        var data = JSON.parse(message.toString());
-        writeData(data);
-        sendSms(data); 
+    // if(topic === 'data'){  
+    //     console.log(message)
+    //     console.log(JSON.parse(message.toString()));
+    //     var data = JSON.parse(message.toString());
+    //     writeData(data);
+    //     sendSms(data); 
+    // }
+
+    if(message.toString() !== "Data not received"){
+        var data = message.toString().split(':-')[1].split(',');
+
+        console.log(data)
+
+        var map = {
+            temp : data[0],
+            hum : data[1],
+            sound: data[2],
+            air: data[3]
+        }
+
+        console.log(map.temp);    
+
+        try{
+            writeData(map);
+            sms.validateSms(map);
+        }catch(err){
+            console.log(err);
+        }
+        
     }
-})
+});
 
