@@ -16,8 +16,7 @@ client.on('connect', () => {
 });
 
 client.on('message', (topic, message) => {
-    if(topic === 'Data'){
-        
+    if(topic === 'Data'){  
         console.log(message.toString());
         var data = message.toString().split(',');
         console.log(data);
